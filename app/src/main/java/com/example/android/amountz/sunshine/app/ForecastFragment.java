@@ -51,6 +51,8 @@ public class ForecastFragment extends Fragment {
             case R.id.action_settings:
                 return true;
             case R.id.action_refresh:
+                FetchWeatherTask weatherTask = new FetchWeatherTask();
+                weatherTask.execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
