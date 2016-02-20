@@ -1,5 +1,6 @@
 package com.example.android.amountz.sunshine.app;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,8 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -95,7 +98,18 @@ public class ForecastFragment extends Fragment {
         // attach adapter to ListView
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.v("onItemClick", "TOAST!!!!");
+                Context context = getContext();
+                int duration = Toast.LENGTH_SHORT;
+                String text =  mForecastAdapter.getItem(position);
+                Log.v("onItemClick", text);
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+        });
 
         return rootView;
     }
