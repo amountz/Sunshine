@@ -103,7 +103,7 @@ public class ForecastFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String text =  mForecastAdapter.getItem(position);
                 Log.v("onItemClick", text);
-                Toast toast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
             }
         });
 
