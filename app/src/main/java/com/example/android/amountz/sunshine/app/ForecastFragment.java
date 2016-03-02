@@ -64,12 +64,7 @@ public class ForecastFragment extends Fragment {
             case R.id.action_settings:
                 return true;
             case R.id.action_refresh:
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String location = prefs.getString( getString(R.string.pref_location_key),
-                        getString(R.string.pref_location_default));
-                Log.v("onOptionsItemSelected", "location: " + location);
-                FetchWeatherTask weatherTask = new FetchWeatherTask();
-                weatherTask.execute(location);
+                updateWeather();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -80,24 +75,12 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Create dummy data for ListView
-        String[] data = {
-                "Friday 2/12 - Sunny - 31/17",
-                "Saturday 2/13 - Foggy - 21/8",
-                "Sunday 2/14 - Cloudy - 22/17",
-                "Monday 2/15 - Rainy - 18/11",
-                "Tuesday 2/16 - Sunny - 21/10",
-                "Wednesday 2/17 - Hail - 17/10",
-                "Thursday 2/18 - Cloudy - 21/12"
-        };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                weekForecast);
+                new ArrayList<String>());
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -117,6 +100,21 @@ public class ForecastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void updateWeather() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString( getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        Log.v("onOptionsItemSelected", "location: " + location);
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]>{
