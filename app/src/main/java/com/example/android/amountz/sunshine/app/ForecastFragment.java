@@ -1,9 +1,11 @@
 package com.example.android.amountz.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -62,8 +64,12 @@ public class ForecastFragment extends Fragment {
             case R.id.action_settings:
                 return true;
             case R.id.action_refresh:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String location = prefs.getString( getString(R.string.pref_location_key),
+                        getString(R.string.pref_location_default));
+                Log.v("onOptionsItemSelected", "location: " + location);
                 FetchWeatherTask weatherTask = new FetchWeatherTask();
-                weatherTask.execute("94043");
+                weatherTask.execute(location);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -243,7 +249,7 @@ public class ForecastFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
                 final String FORECAST_BASE_URL =
                         "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "q";
+                final String QUERY_PARAM = "zip";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
