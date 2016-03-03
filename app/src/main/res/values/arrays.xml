@@ -6,7 +6,7 @@
     </string-array>
 
     <string-array name="unitsValues">
-        <item>metric</item>
-        <item>imperial</item>
+        <item>Metric</item>
+        <item>Imperial</item>
     </string-array>
 </resources>
