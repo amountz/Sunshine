@@ -2,25 +2,26 @@ package com.example.android.amountz.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ShareActionProvider;
 
-import java.io.IOException;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+    private String mForecastStr;
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,24 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        }
+        else Log.d(LOG_TAG, "ShareActionProvider is null!!");
+
         return true;
+    }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mForecastStr + FORECAST_SHARE_HASHTAG);
+        return shareIntent;
     }
 
     private void openPreferredLocationInMap() {
@@ -80,10 +98,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        if (id == R.id.action_map_location) {
+        else if (id == R.id.action_map_location) {
             openPreferredLocationInMap();
             return true;
         }
+        else if (id == R.id.menu_item_share) {
+            createShareForecastIntent();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 }
