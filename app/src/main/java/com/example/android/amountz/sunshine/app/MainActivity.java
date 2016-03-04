@@ -46,24 +46,26 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private Uri geoUriStringFromZipCode(String zipcode) {
-        final Geocoder geocoder = new Geocoder(this);
-        String geoString = "geo:37.4,-122.1"; //default map to 94043
+    private void openPreferredLocationInMap() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
 
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocationName(zipcode, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                Address address = addresses.get(0);
-                geoString = "geo:" + address.getLatitude() + "," + address.getLongitude();
-            }
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Can't get geocode from zipcode!");
-            e.printStackTrace();
+        Uri geoString = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Log.v(LOG_TAG, geoString.toString());
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoString);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            // make sure there is an intent to handle this before launching
+            startActivity(intent);
         }
+        else Log.e(LOG_TAG, "Can't resolve activity to launch map intent");
 
-        Log.v(LOG_TAG, geoString);
-        return Uri.parse(geoString);
     }
 
     @Override
@@ -79,17 +81,8 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_map_location) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            String location = prefs.getString(getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default));
-
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(geoUriStringFromZipCode(location));
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                // make sure there is an intent to handle this before launching
-                startActivity(intent);
-            }
-            else Log.e(LOG_TAG, "Can't resolve activity to launch map intent");
+            openPreferredLocationInMap();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
